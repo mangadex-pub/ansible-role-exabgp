@@ -1,0 +1,10 @@
+- name: Reload ExaBGP
+  ansible.builtin.systemd:
+    name: exabgp
+    state: reloaded
+
+- name: Restart ExaBGP
+  ansible.builtin.systemd:
+    name: exabgp
+    state: restarted
+    daemon_reload: true

@@ -1,0 +1,41 @@
+- name: Install ExaBGP
+  ansible.builtin.apt:
+    name: exabgp
+    state: latest
+    cache_valid_time: 86400
+
+- name: Create ExaBGP systemd override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/exabgp.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+    force: true
+
+- name: Install ExaBGP systemd service override
+  ansible.builtin.template:
+    src: exabgp.service.override.conf.j2
+    dest: /etc/systemd/system/exabgp.service.d/override.conf
+    owner: root
+    group: root
+    mode: 0644
+    force: true
+  notify: Restart ExaBGP
+
+- name: Ensure ExaBGP is enabled
+  ansible.builtin.systemd:
+    name: exabgp
+    enabled: true
+    daemon_reload: true
+
+- name: Template out ExaBGP configuration
+  ansible.builtin.template:
+    src: exabgp.conf.j2
+    dest: /etc/exabgp/exabgp.conf
+    owner: root
+    group: root
+    mode: 0644
+    force: true
+    validate: "exabgp --validate %s"
+  notify: Restart ExaBGP

@@ -1,0 +1,15 @@
+---
+parseable: true
+
+skip_list:
+  - "package-latest" # No.
+
+enable_list:
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner
+
+exclude_paths:
+  - .cache
+
+offline: true

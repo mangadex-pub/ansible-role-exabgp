@@ -1,0 +1,32 @@
+# {{ ansible_managed }} by role {{ role_name }}
+
+template {
+{% for session in exabgp_sessions %}
+    neighbor {{ session.name }} {
+        router-id {{ session.router_id }};
+        local-address {{ session.local_address }};
+        local-as {{ session.local_as }};
+        peer-as {{ session.peer_as }};
+        hold-time {{ session.hold_time }};
+        capability {
+            graceful-restart;
+        }
+        family {
+            ipv4 unicast;
+        }
+        static {
+{% for route in session.routes %}
+            # {{ route.name }}
+            route {{ route.announce }} next-hop self med {{ route.med }};
+{% endfor %}
+        }
+    }
+}
+
+{% for peer in session.peers %}
+neighbor {{ peer }} {
+    inherit {{ session.name }};
+}
+{% endfor %}
+
+{% endfor %}
